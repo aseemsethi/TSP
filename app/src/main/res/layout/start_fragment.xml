@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/rl_start">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:id="@+id/first"
+        android:layout_alignParentTop="true"
+        android:layout_height="50dp">
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/x"
+            android:layout_weight=".3"
+            android:inputType="number"
+            android:hint="X-Axis"
+            android:textSize="14sp"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/y"
+            android:layout_weight=".3"
+            android:inputType="number"
+            android:hint="Y-Axis"
+            android:textSize="14sp"/>
+
+        <Button
+            android:text="Add"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_city"
+            android:layout_weight=".3"
+            android:layout_width="50dp"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/border"
+        android:layout_weight=".8"
+        android:id="@+id/frame"
+        android:layout_below="@+id/first"
+        android:layout_alignParentEnd="true"
+        android:layout_height="300dp">
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/frame"
+
+        android:layout_above="@+id/second">
+
+        <TextView
+            android:text="Cities:"
+            android:layout_width="match_parent"
+            android:layout_above="@+id/second"
+            android:layout_alignStart="@+id/second"
+            android:id="@+id/calc"
+            android:layout_alignEnd="@+id/second"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frame"
+            />
+    </ScrollView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:id="@+id/second"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/first"
+        android:layout_height="50dp">
+
+        <Button
+            android:text="Run"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/run"
+            android:layout_weight="1"/>
+
+        <Button
+            android:text="Stop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/stop"
+            android:layout_weight="1"/>
+
+        <Button
+            android:text="Clear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/clear"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
