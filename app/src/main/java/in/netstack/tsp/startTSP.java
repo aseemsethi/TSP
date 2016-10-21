@@ -26,6 +26,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -41,7 +43,7 @@ public class startTSP extends Fragment {
     TextView calcT;
     int MAXCITY = 20;
     int numCities = 0;
-    int POP_SIZE=10;
+    int POP_SIZE=20;
     Trip[] TripInstance = new Trip[POP_SIZE];
     boolean running = false;
     int instance = 0;
@@ -57,6 +59,9 @@ public class startTSP extends Fragment {
     // This is a Trip
     class Trip {
         ArrayList trip = new ArrayList<Cities>();
+        double cost = 0;
+        double fitness = 0;
+
         public Trip() {
             for (int i = 0; i < numCities; i++) {
                 trip.add(null);
@@ -71,6 +76,13 @@ public class startTSP extends Fragment {
             // Randomly reorder the tour
             Collections.shuffle(trip);
         }
+        public void showCities() {
+            for (int i = 0; i < numCities; i++) {
+                Cities city = (Cities)trip.get(i);
+                calcT.append("\nCity: " + city.name +
+                        "  X: " + city.xVal + " Y: " + city.yVal);
+            }
+        }
         public void showTrip() {
             Log.d(TAG, "show trip");
             calcT.append("\nTour: ");
@@ -78,13 +90,32 @@ public class startTSP extends Fragment {
                 calcT.append(((Cities)trip.get(cityIndex)).name);
             }
         }
-        public void showDistance() {
-            double cost = 0;
-            calcT.append("\nCost: ");
-            for (int cityIndex = 0; cityIndex < numCities-1; cityIndex++) {
-                cost += distance( ((Cities)trip.get(cityIndex)), ((Cities)trip.get(cityIndex+1)) );
+        public void showDistance(boolean op) {
+            if (cost == 0) {
+                for (int cityIndex = 0; cityIndex < numCities - 1; cityIndex++) {
+                    cost += distance(((Cities) trip.get(cityIndex)), ((Cities) trip.get(cityIndex + 1)));
+                }
             }
-            calcT.append(" Cost: " + Math.round(cost));
+            if (op == true)
+                calcT.append(" Cost: " + Math.round(cost));
+        }
+        public double getFitness(boolean op) {
+            if (cost == 0)    showDistance(false);
+            if (fitness != 0) {
+                Log.d(TAG, "Trip Fitness.: " + fitness);
+                if (op == true)
+                    calcT.append(" Fitness" + fitness);
+                return fitness;
+            }
+            fitness = 1/(double)Math.round(cost);
+            Double truncatedDouble = BigDecimal.valueOf(fitness)
+                    .setScale(5, RoundingMode.HALF_UP)
+                    .doubleValue();
+            fitness = truncatedDouble;
+            Log.d(TAG, "Trip Fitness: " + fitness);
+            if (op == true)
+                calcT.append(" Fitness" + fitness);
+            return (fitness);
         }
     }
 
@@ -201,7 +232,6 @@ public class startTSP extends Fragment {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     hideKeyboard(v.getContext());
                                     String cityName = txtUrl.getText().toString();
-                                    Log.d(TAG, "User entered: " + cityName);
                                     myCities[currentNum].name = cityName;
                                 }
                             })
@@ -219,25 +249,48 @@ public class startTSP extends Fragment {
         return v;
     }
     public void runAlgo() {
+        // Generate a number of trips - currently 20
         for (int i=0;i<POP_SIZE;i++) {
             TripInstance[i] = new Trip();
             TripInstance[i].generateTrip();
-            TripInstance[i].showTrip();
-            instance = i;
-            //aView.invalidate();
+        }
+        TripInstance[0].showCities();
+
+        // Get min trip size
+        int minIndex = 0;
+        for(int i=0;i<POP_SIZE;i++) {
+            if (TripInstance[minIndex].getFitness(false) < TripInstance[i].getFitness(false)) {
+                minIndex = i;
+                Log.d(TAG, "\n" + i + ": "+ String.valueOf(TripInstance[i].getFitness(false)));
+            }
+        }
+        calcT.append("\nBest Starting Trip: ");
+        TripInstance[minIndex].showTrip();
+        TripInstance[minIndex].showDistance(true);
+        TripInstance[minIndex].getFitness(true);
+        instance = minIndex;
+        aView.invalidate();
+
+        for (int j=0;j<100;j++) {
+            // Do Crossover within the same population of trips
+
+            // Do some mutation
+
+            // Loop again
         }
     }
+
     public void putCities(Canvas canvas, TextView calcT, Trip TripInstance) {
         Paint paint=new Paint();
         paint.setTextSize(50);
-        calcT.setText("Cities:");
+        //calcT.setText("Cities:");
         for (int i=0;i<numCities;i++) {
             paint.setColor(Color.parseColor("#CD5C5C"));
             canvas.drawCircle(myCities[i].xVal, myCities[i].yVal, 20, paint);
             paint.setColor(Color.parseColor("#0000ff"));
             canvas.drawText(myCities[i].name, myCities[i].xVal+15, myCities[i].yVal+15, paint);
-            calcT.append("\nCity: " + myCities[i].name +
-                    " X: " + myCities[i].xVal +  " Y: " + myCities[i].yVal);
+            //calcT.append("\nCity: " + myCities[i].name +
+                   // " X: " + myCities[i].xVal +  " Y: " + myCities[i].yVal);
         }
         if (TripInstance != null) {
             for (int i = 0; i < numCities - 1; i++) {
@@ -249,8 +302,10 @@ public class startTSP extends Fragment {
                 canvas.drawLine(toCity.xVal, toCity.yVal,
                         fromCity.xVal, fromCity.yVal, paint);
             }
-            TripInstance.showTrip();
-            TripInstance.showDistance();
+            //TripInstance.showTrip();
+            //TripInstance.showDistance();
+        } else {
+            Log.d(TAG, "Tripinstance is null");
         }
     }
     public static void hideKeyboard(Context ctx) {
