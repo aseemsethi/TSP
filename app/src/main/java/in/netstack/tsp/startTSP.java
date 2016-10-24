@@ -273,13 +273,37 @@ public class startTSP extends Fragment {
 
         for (int j=0;j<100;j++) {
             // Do Crossover within the same population of trips
-
+            Trip[] TripInstanceNew = new Trip[POP_SIZE];
+            for (int i=0;i<POP_SIZE;i++) {
+                TripInstanceNew[i] = new Trip();
+                TripInstanceNew[i] = TripInstance[i];
+            }
+            /* TBD */
+            // From 1st 5 entries (these are mixed, so are randomly distributed,
+            // take out top 2 fittest trips and do a crossover
+            //Trip fittest = getFittestTrip(TripInstanceNew);
+            // This works, since getFittest makes the fittest entry null.
+            //Trip nextFittest = getFittestTrip(TripInstanceNew);
+            //crossover (fittest, nextFittest)
+            /*
+            int x = randomWithRange(1,5);
+            for (int i=0; i<x;i++) {
+                fittest.trip.set(i, nextFittest.trip.get(i));
+            }
+            for (int i=x;i<fittest.trip.size();i++) {
+                fittest.trip.set(i, nextFittest.trip.get(i));
+            }
+            */
             // Do some mutation
 
             // Loop again
         }
     }
-
+    int randomWithRange(int min, int max)
+    {
+        int range = (max - min) + 1;
+        return (int)(Math.random() * range) + min;
+    }
     public void putCities(Canvas canvas, TextView calcT, Trip TripInstance) {
         Paint paint=new Paint();
         paint.setTextSize(50);
